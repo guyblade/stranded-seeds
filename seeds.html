@@ -39,59 +39,38 @@
 
   const data = GetData();
 
-  function AddHeader(table) {
-    let thead = document.createElement('thead');
-    let header = document.createElement('tr');
-    thead.appendChild(header)
+  function GetHeaders() {
+    let ret = []
     let headings = ['Seed', 'Breakthroughs', 'Sobrius Map', 'Sobrius Start', 'Desertum Map', 'Desertum Start', 'Saltu Map', 'Saltu Start'];
-    headings.forEach(function (x) {
-      let th = document.createElement('th');
-      th.innerText = x;
-      header.appendChild(th);
-    });
     let hidden_headings = ['Handle', 'Map-Start-Concat'];
     let regions = ['Sobrius', 'Desertum', 'Saltu'];
     regions.forEach(function(region) {
       hidden_headings.forEach(function (x) {
-        let th = document.createElement('th');
-        th.innerText = region + ' ' + x;
-        th.dataset.hidden = true;
-        header.appendChild(th);
+        let h = region + ' ' + x;
+        headings.push(h);
       });
     });
-    table.appendChild(thead);
+    headings.forEach(function (x) { ret.push({'title': x}); });
+    return ret;
   }
 
   function MapStartConcat(mp, st) {
     return mp + "--" + st;
   }
 
-  function AddRow(
-      table, seed, breakthroughs,
+  function MakeRow(
+      seed, breakthroughs,
       sobrius_map, sobrius_start, sobrius_handle,
       desertum_map, desertum_start, desertum_handle,
       saltu_map, saltu_start, saltu_handle) {
-    let row = document.createElement('tr');
+
     let vals = [seed, breakthroughs.join(', '), sobrius_map, sobrius_start, desertum_map, desertum_start, saltu_map, saltu_start];
-    let center = [true, false, false, true, false, true, false, true, false, true];
-    for (let i = 0; i < vals.length; ++i) {
-      let x = vals[i]
-      let td = document.createElement('td');
-      td.innerText = x;
-      if (center[i]) {
-        td.classList.add('centered');
-      }
-      row.appendChild(td);
-    }
     let hidden_vals = [sobrius_handle, MapStartConcat(sobrius_map, sobrius_start),
                        desertum_handle, MapStartConcat(desertum_map, desertum_start),
                        saltu_handle, MapStartConcat(saltu_map, saltu_start)];
-    hidden_vals.forEach(function(x) {
-      let td = document.createElement('td');
-      td.innerText = x;
-      row.appendChild(td);
-    });
-    table.appendChild(row);
+
+    vals.push(...hidden_vals);
+    return vals;
   }
 
   function breakthroughs(techs, lookup) {
@@ -108,27 +87,30 @@
     };
   }
 
-  function AddData(dt, table) {
+  function RenderData(dt) {
     let lookup = make_lookup(dt);
     let handle = make_handle_lookup(dt);
+    let ret = [];
     dt.data.forEach(function(row) {
-      AddRow(table,
+      ret.push(MakeRow(
              row.seed, breakthroughs(row.techs, lookup),
              lookup(row.sobrius.mp), row.sobrius.st, handle(row.sobrius),
              lookup(row.desert.mp), row.desert.st, handle(row.desert),
-             lookup(row.saltu.mp), row.saltu.st, handle(row.saltu));
+             lookup(row.saltu.mp), row.saltu.st, handle(row.saltu)));
     });
+    return ret;
   }
 
   function AddTable() {
     return data.then(function (dt) {
        let table = document.createElement('table');
-       AddHeader(table);
        document.getElementById("main").appendChild(table);
-       let tbody = document.createElement('tbody');
-       table.appendChild(tbody);
-       AddData(dt, tbody);
+
+       let headers = GetHeaders();
+       let rendered_data = RenderData(dt);
        return new DataTable(table, {
+          columns: headers,
+          data: rendered_data,
           columnDefs: [
             {
                 target: [8, 9, 10, 11, 12, 13],
@@ -139,26 +121,6 @@
           pageLength: 1000,
           lengthMenu: [1000, 5000, 100, -1]
       });
-       /*
-       return new simpleDatatables.DataTable(table, {
-                sortable: false,
-                perPage: 1000,
-                perPageSelect: [1000, 5000, 100, ["All", -1]],
-                columns: [
-                  {
-                    select: [8, 9, 10, 11, 12, 13],
-                    hidden: true,
-                    render: (data, cell, row) => {
-                        if (row.dataset.bonusdata == undefined || row.dataset.bonusdata == null) {
-                          row.dataset.bonusdata = "";
-                        }
-                        row.dataset.bonusdata += ", " + data;
-                        return data
-                    }
-                  }
-                ]
-            });
-            */
     });
   }
 
