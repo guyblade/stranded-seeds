@@ -81,6 +81,16 @@
     parent_row.appendChild(td);
   }
 
+  function AppendHandleCell(handle, parent_row) {
+    let td = document.createElement('td');
+    let a = document.createElement('a');
+    a.setAttribute('href', 'seeds.html?q=' + handle);
+    a.setAttribute('target', '_blank');
+    a.innerText = handle;
+    td.appendChild(a);
+    parent_row.appendChild(td);
+  }
+
 
   function AddData(parent) {
     Object.keys(sobrius_start_data).forEach(function (map) {
@@ -93,7 +103,7 @@
         AppendImageCell(dt, tr);
         AppendTextCell(map, tr);
         AppendTextCell(start, tr);
-        AppendTextCell(dt['handle'], tr);
+        AppendHandleCell(dt['handle'], tr);
         ranges.forEach(function(range) {
           soil_types.forEach(function(soil) {
 	    AppendTextCell(dt[range][soil], tr);

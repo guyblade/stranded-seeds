@@ -186,8 +186,18 @@
     });
   }
 
+  function MaybeSetSearch(datatable) {
+    const params_str = window.location.search;
+    const params = new URLSearchParams(params_str);
+    if (!params.has('q')) {
+      return;
+    }
+    dt.then(function(v) { v.search(params.get('q')).draw(); });
+  }
+
   window.onload = function() {
     window.dt = AddTable();
+    MaybeSetSearch(window.dt);
     AddLegend();
   };
 
