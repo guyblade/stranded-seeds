@@ -45,14 +45,29 @@ function MakeImageToggle(a, img) {
   };
 }
 
+function ToGithubImageUrl(url) {
+  // https://github.com/guyblade/stranded-seeds/tree/main/full_size_screenshots/desertum
+  // "desertum_starts/images/Survey-Desert_Canyon_01-1-1178241089-113722.png"
+
+  const prefix = "https://github.com/guyblade/stranded-seeds/tree/main/full_size_screenshots/";
+  return prefix + url.replace("_starts/images", "");
+}
+
+function MakeA(url, text, new_window) {
+  let a = document.createElement('a');
+  a.setAttribute('href', url);
+  if (new_window) {
+    a.setAttribute('target', '_blank');
+  }
+  a.innerText = text;
+  return a;
+}
+
 function AppendImageCell(dt, parent_row) {
   let im = document.createElement('td');
   let url = dt['image_src']
-  let a = document.createElement('a');
-  a.setAttribute('href', url);
-  a.setAttribute('target', '_blank');
-  a.innerText = 'View in New Tab';
-  im.appendChild(a);
+  let a = MakeA(url, 'View in New Tab', true);
+
   let br = document.createElement('br');
   im.appendChild(br);
   let i = MakeImg(url)
@@ -62,8 +77,16 @@ function AppendImageCell(dt, parent_row) {
   a2.setAttribute('href', 'javascript: false');
   i.onclick = MakeImageToggle(a2, i);
   a2.innerText = 'Display Here';
+
+  let a3 = MakeA(ToGithubImageUrl(url), 'View Full Size on Github', true);
+
   im.appendChild(a2);
   im.appendChild(i);
+  im.appendChild(document.createElement('br'));
+  im.appendChild(a);
+  im.appendChild(document.createElement('br'));
+  im.appendChild(a3);
+
   parent_row.appendChild(im);
 }
 
