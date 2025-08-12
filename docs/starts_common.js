@@ -98,11 +98,13 @@ function AppendTextCell(text, parent_row) {
 
 function AppendHandleCell(handle, parent_row) {
   let td = document.createElement('td');
-  let a = document.createElement('a');
-  a.setAttribute('href', 'seeds.html?q=' + handle);
-  a.setAttribute('target', '_blank');
-  a.innerText = handle;
+  let a = MakeA("seeds.html?q=" + handle, handle, true);
+  let a2 = MakeA("seeds_3m.html?q=" + handle, "3m", true);
+
   td.appendChild(a);
+  td.appendChild(document.createTextNode(" ["));
+  td.appendChild(a2)
+  td.appendChild(document.createTextNode("]"));
   parent_row.appendChild(td);
 }
 

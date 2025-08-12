@@ -1,0 +1,25 @@
+.centered {
+  text-align: center;
+}
+
+th {
+  border: thick black solid;
+}
+
+td {
+  border: thin black solid;
+}
+
+.invisible {
+  display: None;
+}
+
+.legend-subsection {
+  spacing: 5px;
+}
+
+#legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
